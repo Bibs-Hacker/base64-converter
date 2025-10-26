@@ -1,0 +1,244 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Base64 Studio-By Tech Brian👻</title>  <!-- Many fonts for user selection -->  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@300;400;700&family=Roboto+Slab:wght@300;400;700&family=Montserrat:wght@300;400;700&family=Space+Grotesk:wght@300;400;600&family=Fira+Code:wght@300;400&family=DM+Sans:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Nunito:wght@300;400;700&family=Source+Sans+3:wght@300;400;700&display=swap" rel="stylesheet">  <style>
+    :root{
+      --bg-dark:#050a; --panel: rgba(255,255,255,1.03);
+      --neon-1: #00f6ff; --neon-2:#ff3ec4; --muted: #98fcc3;
+      --glass: rgba(255,255,255,2.02);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#dff9ff;background:linear-gradient(180deg,#054773 0%, #071023 60%);overflow:hidden}
+
+    /* Splash */
+    #splash{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,#0f04 0%,rgba(10,10,0,1.6) 100%);z-index:9999}
+    #splash .card{display:grid;place-items:center;gap:16px;padding:28px;border-radius:16px;background:linear-gradient(135deg, rgba(205,25,25,1.02), rgba(25,250,255,1.01));box-shadow:0 30px 90px rgba(0,0,0,1.6);border:3px solid rgba(250,25,255,2.03)}
+    #splash .logo{width:120px;height:120px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,var(--neon-1),var(--neon-2));box-shadow:0 10px 50px rgba(50,26,250,1.08);font-weight:900;font-size:42px;color:#041018}
+    #splash h2{color:#071018;background:linear-gradient(90deg,var(--neon-1),var(--neon-2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:50px}
+    #splash p{color:var(--muted);font-size:20px}
+    #splash button{margin-top:6px;padding:10px 14px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:#0f1;background:#f0ff;font-weight:700;font-size:20px;cursor:pointer}
+
+    /* layout */
+    .stage{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:28px}
+    .card{width:100%;max-width:1100px;border-radius:20px;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 30px 80px rgba(2,8,23,1.6);border:3px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:18px}
+
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo-sm{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--neon-1),var(--neon-2));display:grid;place-items:center;font-weight:900;color:#041018;font-size:25px}
+    .title{font-size:30px;font-weight:700}
+    .sub{font-size:20px;color:var(--muted)}
+
+    /* main controls centered vertically (downward arranged) */
+    .main{display:flex;flex-direction:column;align-items:center;gap:12px}
+
+    textarea#input{width:100%;min-height:160px;border-radius:12px;padding:16px;border:3px solid rgba(25,250,25,1.03);background:transparent;color:inherit;font-size:18px;outline:none;resize:vertical}
+
+    /* neon blazing buttons */
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:12px 20px;border-radius:12px;border:none;cursor:pointer;font-weight:700;letter-spacing:0.3px;box-shadow:0 10px 40px rgba(0,0,0,1.6);transition:transform .16s ease, box-shadow .16s}
+    .btn:active{transform:translateY(2px)}
+
+    .neon{background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:#021;box-shadow:0 8px 40px rgba(0,246,255,1.08), 0 0 30px rgba(255,62,196,0.06);border:1px solid rgba(255,255,255,0.04)}
+    .ghost{background:transparent;border:3px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* output animated */
+    .output-wrap{width:100%;display:flex;flex-direction:column;gap:8px}
+    .output{min-height:140px;border-radius:12px;padding:16px;border:2px solid rgba(25,255,205,1.03);background:linear-gradient(180deg, rgba(8,10,14,0.6), rgba(12,14,20,0.4));color:#e6ffff;font-family:monospace;font-size:14px;white-space:pre-wrap;overflow:auto}
+
+    .output.animated{animation:glowIn .5s ease both}
+    @keyframes glowIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
+
+    /* typing effect */
+    .typing{border-right:3px solid rgba(255,255,255,0.14);padding-right:6px}
+
+    /* footer */
+    footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:16px;padding-top:6px}
+
+    /* settings modal */
+    .modal{position:fixed;right:24px;top:24px;background:rgba(2,8,23,0.9);padding:12px;border-radius:12px;border:3px solid rgba(255,255,255,0.03);box-shadow:0 18px 50px rgba(0,0,0,0.6);z-index:1200;width:320px;display:none;flex-direction:column;gap:10px}
+    .row{display:flex;gap:8px;align-items:center}
+    select,input[type=checkbox]{padding:8px;border-radius:8px;border:3px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+
+    /* history list inside modal */
+    .history-list{max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+    .hist-item{padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));border:3px solid rgba(255,255,255,0.02);font-size:16px}
+
+    /* big fullscreen buttons when collapsed on small screens */
+    @media (max-width:760px){ .card{padding:18px;margin:12px} textarea#input{min-height:120px} }
+  </style></head>
+<body>  <!-- Splash screen -->  <div id="splash">
+    <div class="card">
+      <div class="logo">B-X</div>
+      <h2>Base64 Studio</h2>
+      <p style="text-align:center;color:var(--muted)">Massive. Clean. Fast.</p>
+      <button id="enterBtn">Launch</button>
+    </div>
+  </div>  <div class="stage" id="app" style="display:none">
+    <div class="card">
+      <div class="top">
+        <div class="brand">
+          <div class="logo-sm">B-X</div>
+          <div>
+            <div class="title">Base64 Studio By TECH BRIAN👻</div>
+            <div class="sub">Encode · Decode — minimal UI</div>
+          </div>
+        </div><div style="display:flex;gap:8px;align-items:center">
+      <button id="openSettings" class="btn ghost">⚙ Settings</button>
+      <button id="toggleTheme" class="btn ghost">🌙</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <textarea id="input" placeholder="Type or paste text / URL / Base64 here..."></textarea>
+
+    <div class="actions">
+      <button id="encode" class="btn neon">Encode</button>
+      <button id="decode" class="btn neon">Decode</button>
+      <button id="copyOut" class="btn ghost">Copy</button>
+      <button id="downloadOut" class="btn ghost">Download</button>
+    </div>
+
+    <div class="output-wrap">
+      <div id="output" class="output" aria-live="polite"></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>Base64 Studio</div>
+    <div class="sub">Built for massive vibes</div>
+    <div><marquee><h3>©MERA-BR SYSTEM CORTEX | 2025-26 √@COPYWRIGHT</h3></marquee></div>
+  </footer>
+</div>
+
+  </div>  <!-- Settings / history modal -->  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center"><strong>Settings</strong><button id="closeModal" class="btn ghost">Close</button></div>
+    <div class="row">
+      <label style="min-width:80px;color:var(--muted)">Font</label>
+      <select id="fontSelect">
+        <option value="Inter,system-ui">Inter</option>
+        <option value="Poppins,system-ui">Poppins</option>
+        <option value="Roboto Slab,serif">Roboto Slab</option>
+        <option value="Montserrat,system-ui">Montserrat</option>
+        <option value="Space Grotesk,system-ui">Space Grotesk</option>
+        <option value="Fira Code,monospace">Fira Code</option>
+        <option value="DM Sans,system-ui">DM Sans</option>
+        <option value="Playfair Display,serif">Playfair</option>
+        <option value="Nunito,system-ui">Nunito</option>
+        <option value="Source Sans 3,system-ui">Source Sans</option>
+        <option value="monospace">Monospace</option>
+      </select>
+    </div><div class="row">
+  <label style="min-width:80px;color:var(--muted)">Music</label>
+  <input type="checkbox" id="musicToggle" checked> <span style="color:var(--muted);margin-left:6px">Background</span>
+</div>
+
+<div style="margin-top:6px"><strong>History</strong></div>
+<div class="history-list" id="historyList"></div>
+<div style="display:flex;gap:8px;margin-top:8px"><button id="clearHistory" class="btn ghost">Clear</button><button id="exportHistory" class="btn neon">Export</button></div>
+
+  </div>  <!-- loop music (may be blocked until user interacts) --><audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f6b3b8d0f.mp3?filename=ambient-loop-11079.mp3"></audio>
+
+  <script>
+    // UTF8-safe base64
+    function encodeUTF8(str){ try{return btoa(unescape(encodeURIComponent(str))); }catch(e){return '';}}
+    function decodeUTF8(b64){ try{return decodeURIComponent(escape(atob(b64))); }catch(e){return '';}}
+
+    const splash = document.getElementById('splash');
+    const enterBtn = document.getElementById('enterBtn');
+    const app = document.getElementById('app');
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const encodeBtn = document.getElementById('encode');
+    const decodeBtn = document.getElementById('decode');
+    const copyBtn = document.getElementById('copyOut');
+    const downloadBtn = document.getElementById('downloadOut');
+    const toggleTheme = document.getElementById('toggleTheme');
+    const modal = document.getElementById('modal');
+    const openSettings = document.getElementById('openSettings');
+    const closeModal = document.getElementById('closeModal');
+    const fontSelect = document.getElementById('fontSelect');
+    const historyList = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistory');
+    const exportHistoryBtn = document.getElementById('exportHistory');
+    const musicToggle = document.getElementById('musicToggle');
+    const bgMusic = document.getElementById('bgMusic');
+
+    let history = JSON.parse(localStorage.getItem('bx_hist')||'[]');
+
+    function renderHistory(){ historyList.innerHTML=''; history.slice(0,50).forEach((h, i)=>{
+      const el = document.createElement('div'); el.className='hist-item';
+      el.innerHTML = `<div style=\"display:flex;justify-content:space-between;align-items:center\"><div style=\"font-size:13px;font-weight:700\">${h.type}</div><div style=\"font-size:12px;color:var(--muted)\">${new Date(h.ts).toLocaleString()}</div></div><div style=\"margin-top:6px;font-size:13px;word-break:break-all\">${h.output.length>300? h.output.slice(0,300)+'...': h.output}</div><div style=\"margin-top:6px;display:flex;gap:6px\"><button class=\"btn ghost\" data-load='${i}'>Load</button><button class=\"btn ghost\" data-copy='${i}'>Copy</button><button class=\"btn ghost\" data-del='${i}'>Del</button></div>`;
+      historyList.appendChild(el);
+    });
+
+      // attach events
+      historyList.querySelectorAll('button[data-load]').forEach(b=>b.addEventListener('click', e=>{
+        const idx = Number(e.currentTarget.dataset.load); const entry = history[idx]; if(entry){ inputEl.value = entry.input; outputEl.textContent = entry.output; animateOutput(); closeModal.click(); }
+      }));
+      historyList.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click', e=>{
+        const idx = Number(e.currentTarget.dataset.copy); navigator.clipboard.writeText(history[idx].output||''); flash('Copied');
+      }));
+      historyList.querySelectorAll('button[data-del]').forEach(b=>b.addEventListener('click', e=>{
+        const idx = Number(e.currentTarget.dataset.del); if(confirm('Delete?')){ history.splice(idx,1); persistHistory(); renderHistory(); }
+      }));
+    }
+
+    function persistHistory(){ localStorage.setItem('bx_hist', JSON.stringify(history)); }
+
+    function addToHistory(type, input, output){ history.unshift({type,input,output,ts:Date.now()}); if(history.length>200) history.pop(); persistHistory(); renderHistory(); }
+
+    function flash(msg){ const el = document.createElement('div'); el.textContent=msg; el.style.position='fixed'; el.style.right='20px'; el.style.bottom='20px'; el.style.padding='10px 14px'; el.style.borderRadius='10px'; el.style.background='linear-gradient(90deg,var(--neon-1),var(--neon-2))'; el.style.color='#021'; document.body.appendChild(el); setTimeout(()=>el.style.opacity=0,1400); setTimeout(()=>el.remove(),1800); }
+
+    function animateOutput(){ outputEl.classList.remove('animated'); void outputEl.offsetWidth; outputEl.classList.add('animated'); }
+
+    encodeBtn.addEventListener('click', ()=>{ const v = inputEl.value||''; const out = encodeUTF8(v); outputEl.textContent = out; addToHistory('Encode', v, out); animateOutput(); });
+    decodeBtn.addEventListener('click', ()=>{ const v = inputEl.value||''; const out = decodeUTF8(v); outputEl.textContent = out; addToHistory('Decode', v, out); animateOutput(); });
+
+    copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(outputEl.textContent||'').then(()=>flash('Copied')) });
+    downloadBtn.addEventListener('click', ()=>{ const data = outputEl.textContent||''; if(!data) return flash('No output'); const blob = new Blob([data], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='conversion.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+
+    // splash -> enter
+    enterBtn.addEventListener('click', ()=>{ splash.style.display='none'; app.style.display='flex'; // attempt to play music after user gesture
+      if(musicToggle.checked){ bgMusic.play().catch(()=>{}); }
+    });
+
+    // theme toggle (Dark/Light)
+    toggleTheme.addEventListener('click', ()=>{
+      const isLight = document.documentElement.getAttribute('data-theme')==='light';
+      if(isLight){ document.documentElement.removeAttribute('data-theme'); document.body.style.background='linear-gradient(180deg,#020305 0%, #071023 60%)'; toggleTheme.textContent='🌙'; }
+      else { document.documentElement.setAttribute('data-theme','light'); document.body.style.background='linear-gradient(180deg,#f7fa 0%, #f2f6 60%)'; toggleTheme.textContent='🌞'; }
+    });
+
+    // settings modal open/close
+    openSettings.addEventListener('click', ()=>{ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); renderHistory(); });
+    closeModal.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+
+    fontSelect.addEventListener('change', ()=>{ document.body.style.fontFamily = fontSelect.value; });
+
+    clearHistoryBtn.addEventListener('click', ()=>{ if(confirm('Clear all saved history?')){ history=[]; persistHistory(); renderHistory(); flash('History cleared'); } });
+
+    exportHistoryBtn.addEventListener('click', ()=>{ const blob = new Blob([JSON.stringify(history, null, 2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'base64-history.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); flash('Exported'); });
+
+    musicToggle.addEventListener('change', ()=>{ if(musicToggle.checked){ bgMusic.play().catch(()=>{}); } else { bgMusic.pause(); } });
+
+    // load persisted settings
+    (function load(){ if(localStorage.getItem('bx_theme')==='light'){ document.documentElement.setAttribute('data-theme','light'); document.body.style.background='linear-gradient(180deg,#f7f8fa 0%, #eef2f6 60%)'; toggleTheme.textContent='☀'; }
+      const savedFont = localStorage.getItem('bx_font'); if(savedFont){ fontSelect.value = savedFont; document.body.style.fontFamily = savedFont; }
+      const musicOn = JSON.parse(localStorage.getItem('bx_music')||'true'); musicToggle.checked = musicOn; if(musicOn) bgMusic.play().catch(()=>{});
+      renderHistory();
+    })();
+
+    // save settings when changed
+    fontSelect.addEventListener('change', ()=>localStorage.setItem('bx_font', fontSelect.value));
+    musicToggle.addEventListener('change', ()=>localStorage.setItem('bx_music', String(musicToggle.checked)));
+
+    // small helper: auto-detect paste of image/datauri (not requested but harmless)
+    window.addEventListener('paste', (e)=>{
+      const items = e.clipboardData && e.clipboardData.items; if(!items) return; for(const it of items){ if(it.type.indexOf('image')===0){ const f = it.getAsFile(); const r = new FileReader(); r.onload = ()=>{ inputEl.value = r.result; }; r.readAsDataURL(f); break; } }
+    });
+
+  </script></body>
+</html>
